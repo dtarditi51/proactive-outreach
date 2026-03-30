@@ -1166,8 +1166,11 @@ function toggle(hdr) {
   if (caret) caret.classList.toggle('open');
 }
 
+let currentFilter = 'action';
+
 // Filter queue
 function filter(f, btn) {
+  currentFilter = f;
   document.querySelectorAll('.qf').forEach(b => { b.classList.remove('on','on-red'); });
   btn.classList.add('on');
   document.querySelectorAll('.qi').forEach(qi => {
@@ -1198,6 +1201,12 @@ function filter(f, btn) {
       else if (f === 'done') txt.textContent = 'No completed records yet today';
       else txt.textContent = 'Select a patient';
     }
+  }
+  const txt = document.getElementById('emptyStateText');
+  if (txt) {
+    if (f === 'action') txt.textContent = 'No open items — all action items resolved';
+    else if (f === 'done') txt.textContent = 'No completed records yet today';
+    else txt.textContent = 'Select a patient';
   }
 }
 
@@ -1270,6 +1279,8 @@ function markResolved(patientId) {
   }
   OutreachDataBus.publish('outreach:resolved', { patientId, timestamp: new Date().toISOString() });
   updateStats();
+  const activeBtn = document.querySelector('.qf.on');
+  if (activeBtn) filter(currentFilter, activeBtn);
   toast('Resolved — record closed', '✓');
 }
 
