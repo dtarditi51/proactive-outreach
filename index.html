@@ -399,6 +399,36 @@ body {
 }
 .toast.on { display: flex; animation: tin 0.2s ease; }
 @keyframes tin { from{transform:translateY(10px);opacity:0;} to{transform:translateY(0);opacity:1;} }
+
+/* ─── RISK WINDOW BADGES (queue) ─────────── */
+.qi-risk-badge {
+  font-size: 8px; font-weight: 700; letter-spacing: 0.4px;
+  padding: 1px 5px; border-radius: 3px;
+  text-transform: uppercase; margin-top: 3px; display: inline-block;
+}
+.rb-red  { background: rgba(220,53,69,0.10); color: var(--red);   border: 1px solid rgba(220,53,69,0.25); }
+.rb-amb  { background: rgba(217,119,6,0.10);  color: var(--amber); border: 1px solid rgba(217,119,6,0.25); }
+
+/* ─── NEXT ACTION BLOCK ──────────────────── */
+.next-action {
+  border-left: 3px solid var(--blue); border-radius: 4px;
+  padding: 8px 12px; margin-bottom: 12px; font-size: 12px; line-height: 1.45;
+}
+.next-action.na-red    { border-color: var(--red);   background: #fff8f8; }
+.next-action.na-amber  { border-color: var(--amber);  background: #fffbf3; }
+.next-action.na-blue   { border-color: var(--blue);   background: #f4f8ff; }
+.next-action.na-green  { border-color: var(--green);  background: #f4fbf7; }
+.na-label {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--mid); margin-bottom: 3px;
+}
+.na-text { color: var(--text); }
+
+/* ─── ESC BANNER RATIONALE ───────────────── */
+.esc-rationale {
+  font-size: 10px; color: rgba(255,255,255,0.55);
+  margin-top: 3px; font-style: italic;
+}
 </style>
 </head>
 <body>
@@ -412,7 +442,7 @@ body {
   <div class="hdr-right">
     <span class="hdr-pill pill-live">● Ava Active</span>
     <span class="hdr-pill pill-window">Mon–Fri · 8 AM – 3 PM</span>
-    <span class="hdr-tcc" onclick="toast('Opening Triage Command Center','↗')">↗ TCC</span>
+    <span class="hdr-tcc" onclick="window.open('https://nextgencommand.netlify.app','_blank')">↗ TCC</span>
     <span class="hdr-clock" id="clock"></span>
   </div>
 </div>
@@ -471,6 +501,7 @@ body {
         <div class="qi-right">
           <div class="qi-day day-red">D+4</div>
           <div class="qi-wave">T1 · 3/3 attempts</div>
+          <div class="qi-risk-badge rb-red">Limb Risk</div>
         </div>
       </div>
 
@@ -483,6 +514,7 @@ body {
         <div class="qi-right">
           <div class="qi-day day-amber">D+5</div>
           <div class="qi-wave">T1 · 3/3 attempts</div>
+          <div class="qi-risk-badge rb-red">AEF Window</div>
         </div>
       </div>
 
@@ -495,6 +527,7 @@ body {
         <div class="qi-right">
           <div class="qi-day day-amber">D+22</div>
           <div class="qi-wave">T2 · 3/3 attempts</div>
+          <div class="qi-risk-badge rb-amb">DAPT Window</div>
         </div>
       </div>
 
@@ -508,6 +541,7 @@ body {
         <div class="qi-right">
           <div class="qi-day day-red">D+3</div>
           <div class="qi-wave">T1 · Priority</div>
+          <div class="qi-risk-badge rb-amb">DAPT Gap</div>
         </div>
       </div>
 
@@ -611,11 +645,12 @@ body {
           <div>
             <div class="esc-label">Escalated to Triage</div>
             <div class="esc-flag">DAPT_NON_COMPLIANCE — patient stopped Plavix</div>
+            <div class="esc-rationale">Stopping P2Y12 within 30 days of DES placement increases in-stent thrombosis risk acutely — same-day provider contact required.</div>
           </div>
           <div class="esc-quote">"It was upsetting my stomach so I stopped it."</div>
         </div>
         <div class="esc-actions">
-          <button class="esc-btn esc-primary" onclick="toast('Transferring to TCC — DAPT_NON_COMPLIANCE active','🚨')">Open in TCC</button>
+          <button class="esc-btn esc-primary" onclick="window.open('https://nextgencommand.netlify.app','_blank')">Open in TCC</button>
           <button class="esc-btn esc-secondary" onclick="toast('Calling (856) 555-4481 on direct DID','📞')">Call Patient</button>
         </div>
       </div>
@@ -636,6 +671,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-red"><div class="na-label">Next Action</div><div class="na-text">Confirm Dr. Kaddissi has been tasked — patient needs alternative P2Y12 review today. Call back to verify aspirin is still being taken and patient understands the risk of remaining off Plavix.</div></div>
         <div>
           <div class="sec-title">Call Log</div>
           <div class="call-entry">
@@ -688,11 +724,12 @@ body {
           <div>
             <div class="esc-label">Escalated to Triage</div>
             <div class="esc-flag">DEVICE_SHOCK — single shock at rest, 8:45 AM</div>
+            <div class="esc-rationale">Post-ICD shock requires same-day device interrogation to distinguish appropriate therapy from inappropriate shock — do not defer.</div>
           </div>
           <div class="esc-quote">"My device gave me a shock when I was just sitting in my chair."</div>
         </div>
         <div class="esc-actions">
-          <button class="esc-btn esc-primary" onclick="toast('Transferring to TCC — DEVICE_SHOCK — EP notified','🚨')">Open in TCC</button>
+          <button class="esc-btn esc-primary" onclick="window.open('https://nextgencommand.netlify.app','_blank')">Open in TCC</button>
           <button class="esc-btn esc-secondary" onclick="toast('Calling (856) 555-7720','📞')">Call Patient</button>
         </div>
       </div>
@@ -710,6 +747,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-red"><div class="na-label">Next Action</div><div class="na-text">Same-day interrogation confirmed 11:30 AM with Dr. Costello. Confirm patient has not driven and has a ride to the appointment. Document outcome when interrogation report is available.</div></div>
         <div>
           <div class="sec-title">Call Log</div>
           <div class="call-entry">
@@ -763,6 +801,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-red"><div class="na-label">Next Action</div><div class="na-text">Try manual call now, then attempt emergency contact from NextGen demographics. If no contact by noon, notify Dr. Tarditi — CLI patient cannot go uncontacted past today.</div></div>
         <div class="info-block ib-amber">
           <div class="ib-title">CLI patient — 3 automated attempts exhausted · Manual nurse outreach required</div>
           D+4 falls within the primary limb perfusion risk window. If manual contact fails today, escalate to attending.
@@ -813,6 +852,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-green"><div class="na-label">Next Action</div><div class="na-text">No action required today. Touch 2 queued April 17 — blanking period palpitations normalized. Monitor for any inbound calls before then.</div></div>
         <div class="info-block ib-green">
           <div class="ib-title">Touch 1 complete · No clinical concerns · Touch 2 queued April 17</div>
           Anticoagulation compliant. Mild expected pleuritic discomfort — blanking period script delivered. Palpitations normalized to patient.
@@ -854,6 +894,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-red"><div class="na-label">Next Action</div><div class="na-text">Manual call required immediately — D+5 PVI is within the atrio-esophageal fistula risk window. If no contact by end of morning session, escalate to Dr. Levi today.</div></div>
         <div class="info-block ib-amber"><div class="ib-title">PVI patient D+5 — 3 automated attempts exhausted</div>Day 5 post-PVI falls within the atrio-esophageal fistula risk window. If manual contact fails, escalate — this patient should not go uncontacted beyond today.</div>
         <div><div class="sec-title">Attempt Log</div>
           <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Mar 25 · 9:00 AM</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">Standard voicemail. No callback.</div></div></div>
@@ -876,6 +917,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-amber"><div class="na-label">Next Action</div><div class="na-text">Log manual contact attempt. Still within Plavix 30-day antiplatelet window — compliance is unknown. Confirm follow-up echo has been scheduled before closing T2 UTC.</div></div>
         <div class="info-block ib-green"><div class="ib-title">Touch 1 (D+2) — Complete · No concerns</div>Antiplatelet compliant, wound healing, no neuro symptoms at 48h.</div>
         <div class="info-block ib-amber"><div class="ib-title">Touch 2 (D+20) — UTC · 3/3 attempts exhausted</div>Day 22 — still within Plavix 30-day window. Follow-up echo status unknown.</div>
         <div><div class="sec-title">Touch 2 Attempt Log</div>
@@ -899,6 +941,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-amber"><div class="na-label">Next Action</div><div class="na-text">Initiate Ava call now — weekend gap means first contact arrives at D+3, inside the DAPT compliance and access site risk window. Do not defer past this morning.</div></div>
         <div class="info-block ib-purple"><div class="ib-title">Friday discharge — first contact delayed to Monday (D+3)</div>Sorted to top of today's priority queue. D+3 falls within DAPT compliance and access site risk window. Ava call queued — first attempt pending.</div>
         <div><div class="sec-title">Action</div><div class="disp-area"><div class="disp-btns"><button class="disp-btn db-red" onclick="toast('Escalating Nguyen to priority — initiating immediate Ava call','🚨')">Initiate Ava Call Now</button></div><textarea class="disp-note" rows="2" placeholder="Note…"></textarea></div></div>
       </div>
@@ -916,6 +959,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-blue"><div class="na-label">Next Action</div><div class="na-text">Ava call in progress. Review transcript when complete — watch for radial access site concerns (hematoma, hand numbness) and DAPT compliance. Radial access is lower risk but bruising is common.</div></div>
         <div class="info-block ib-blue"><div class="ib-title">Ava outbound call in progress — Touch 1 · Radial access script</div>Session AVA-20260330-112834 · Started 10:32 AM · Results will appear here when call completes.</div>
       </div>
     </div>
@@ -932,6 +976,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-blue"><div class="na-label">Next Action</div><div class="na-text">Attempt 2 queued for noon today — no urgent clinical window at D+1 peripheral angio. Standard follow-up.</div></div>
         <div><div class="sec-title">Attempt Log</div><div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Today · 8:52 AM</span><span class="ch-wave">Touch 1</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail Left</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">Standard voicemail left. Attempt 2 scheduled 12:00 PM today.</div></div></div></div>
       </div>
     </div>
@@ -948,6 +993,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-blue"><div class="na-label">Next Action</div><div class="na-text">Touch 2 call queued 1:15 PM today. Confirm remote monitor is active and arm restriction is still being followed before closing the encounter.</div></div>
         <div class="info-block ib-green"><div class="ib-title">Touch 1 (D+2) — Complete · No concerns</div>Wound healing, arm restriction compliant, no shocks, remote monitor active.</div>
         <div class="info-block ib-blue"><div class="ib-title">Touch 2 — Queued for today · 1:15 PM</div>Device check confirmation, wound status, remote monitoring verification.</div>
       </div>
@@ -965,6 +1011,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-green"><div class="na-label">Next Action</div><div class="na-text">Outreach sequence closed — no action required. Follow-up April 20 with Dr. Kaddissi. Stress echo reminder already delivered.</div></div>
         <div class="info-block ib-green"><div class="ib-title">Touch 2 complete · Outreach sequence closed</div>DAPT compliant — aspirin + Plavix, no missed doses. No chest pain. Energy improved. Stress echo reminder delivered. Follow-up April 20.</div>
         <div><div class="sec-title">Call Log</div><div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Today · 9:22 AM</span><span class="ch-wave">Touch 2</span></div><div class="ch-outcome"><span class="ch-tag ct-ok">No Concerns</span><span class="ch-caret open">▶</span></div></div><div class="call-body open"><table class="resp-table"><tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">DAPT both medications?</td><td class="rt-a">Yes — aspirin + Plavix, compliant, no missed doses</td></tr><tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Chest pain at rest or nocturnal?</td><td class="rt-a">No</td></tr><tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Shortness of breath?</td><td class="rt-a">No — energy better than pre-procedure</td></tr><tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">New OTC medications?</td><td class="rt-a">No</td></tr></table></div></div></div>
       </div>
@@ -982,6 +1029,7 @@ body {
         </div>
       </div>
       <div class="rec-body">
+        <div class="next-action na-green"><div class="na-label">Next Action</div><div class="na-text">No action required today. Touch 1 resolved via inbound. Touch 2 queued April 18 — groin bruising already addressed and normalized.</div></div>
         <div class="info-block ib-purple"><div class="ib-title">Patient called inbound before Touch 1 was placed · Resolved via TCC</div>Called main triage line 9:05 AM. POST-PROC badge surfaced context to Nurse Price. Groin bruising concern — reassured (normal post-closure). Touch 1 marked complete via inbound contact. Touch 2 queued April 18.</div>
       </div>
     </div>
