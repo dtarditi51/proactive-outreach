@@ -435,6 +435,10 @@ body {
   font-size: 10px; color: rgba(255,255,255,0.55);
   margin-top: 3px; font-style: italic;
 }
+.esc-elapsed {
+  font-size: 10px; color: rgba(255,255,255,0.45);
+  margin-top: 2px; font-variant-numeric: tabular-nums;
+}
 </style>
 </head>
 <body>
@@ -464,9 +468,9 @@ body {
         <span class="queue-count" id="queue-count-label">12 patients</span>
       </div>
       <div class="queue-filters">
-        <button class="qf" onclick="filter('all',this)">All (12)</button>
-        <button class="qf on" onclick="filter('action',this)">Needs Action (6)</button>
-        <button class="qf" onclick="filter('done',this)">Complete (3)</button>
+        <button class="qf" onclick="filter('all',this)">All (<span id="fc-all">12</span>)</button>
+        <button class="qf on" onclick="filter('action',this)">Needs Action (<span id="fc-action">6</span>)</button>
+        <button class="qf" onclick="filter('done',this)">Complete (<span id="fc-done">3</span>)</button>
       </div>
     </div>
 
@@ -644,7 +648,7 @@ body {
     <!-- Empty state -->
     <div class="record-empty" id="emptyState">
       <div class="record-empty-icon">○</div>
-      <div class="record-empty-text">Select a patient</div>
+      <div class="record-empty-text" id="emptyStateText">Select a patient</div>
     </div>
 
     <!-- ── RAMIREZ ── Escalated DAPT -->
@@ -656,6 +660,7 @@ body {
             <div class="esc-label">Escalated to Triage</div>
             <div class="esc-flag">DAPT_NON_COMPLIANCE — patient stopped Plavix</div>
             <div class="esc-rationale">Stopping P2Y12 within 30 days of DES placement increases in-stent thrombosis risk acutely — same-day provider contact required.</div>
+            <div class="esc-elapsed" data-escalated="2026-03-30T09:17:00" id="elapsed-ramirez"></div>
           </div>
           <div class="esc-quote">"It was upsetting my stomach so I stopped it."</div>
         </div>
@@ -735,6 +740,7 @@ body {
             <div class="esc-label">Escalated to Triage</div>
             <div class="esc-flag">DEVICE_SHOCK — single shock at rest, 8:45 AM</div>
             <div class="esc-rationale">Post-ICD shock requires same-day device interrogation to distinguish appropriate therapy from inappropriate shock — do not defer.</div>
+            <div class="esc-elapsed" data-escalated="2026-03-30T09:05:00" id="elapsed-chen"></div>
           </div>
           <div class="esc-quote">"My device gave me a shock when I was just sitting in my chair."</div>
         </div>
@@ -1117,6 +1123,20 @@ body {
   global.OutreachDataBus = { init, publish, subscribe };
 })(window);
 
+// Elapsed time since escalation
+function updateElapsed() {
+  document.querySelectorAll('.esc-elapsed').forEach(el => {
+    const t = el.getAttribute('data-escalated');
+    if (!t) return;
+    const diff = Math.floor((Date.now() - new Date(t).getTime()) / 60000);
+    if (diff < 1) el.textContent = 'Escalated just now';
+    else if (diff < 60) el.textContent = 'Escalated ' + diff + ' min ago';
+    else { const h = Math.floor(diff/60), m = diff%60; el.textContent = 'Escalated ' + h + 'h ' + m + 'm ago'; }
+  });
+}
+updateElapsed();
+setInterval(updateElapsed, 60000);
+
 // Clock
 setInterval(() => {
   document.getElementById('clock').textContent =
@@ -1159,10 +1179,25 @@ function filter(f, btn) {
     else if (f === 'action') qi.style.display = (isEsc||isUtc||isWk) ? '' : 'none';
     else if (f === 'done')   qi.style.display = isOk ? '' : 'none';
   });
+  document.querySelectorAll('.q-divider').forEach(div => {
+    let next = div.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('q-divider')) {
+      if (next.classList.contains('qi') && next.style.display !== 'none') { hasVisible = true; break; }
+      next = next.nextElementSibling;
+    }
+    div.style.display = hasVisible ? '' : 'none';
+  });
   const selQi = document.querySelector('.qi.sel');
   if (selQi && selQi.style.display === 'none') {
     document.querySelectorAll('[id^="rec-"]').forEach(e => e.style.display = 'none');
     document.getElementById('emptyState').style.display = '';
+    const txt = document.getElementById('emptyStateText');
+    if (txt) {
+      if (f === 'action') txt.textContent = 'No open items — all action items resolved';
+      else if (f === 'done') txt.textContent = 'No completed records yet today';
+      else txt.textContent = 'Select a patient';
+    }
   }
 }
 
@@ -1193,6 +1228,17 @@ function updateStats() {
   document.getElementById('stat-esc').innerHTML = '<strong style="color:var(--red)">' + esc + '</strong> escalated';
   document.getElementById('stat-utc').innerHTML = '<strong style="color:var(--amber)">' + utc + '</strong> UTC';
   document.getElementById('stat-ok').innerHTML  = '<strong style="color:var(--green)">' + ok + '</strong> complete';
+  const escN = document.querySelectorAll('.qi.s-esc').length;
+  const utcN = document.querySelectorAll('.qi.s-utc').length;
+  const wkN  = document.querySelectorAll('.qi.s-wknd').length;
+  const okN  = document.querySelectorAll('.qi.s-ok').length;
+  const allN = document.querySelectorAll('.qi').length;
+  const fcAll  = document.getElementById('fc-all');
+  const fcAct  = document.getElementById('fc-action');
+  const fcDone = document.getElementById('fc-done');
+  if (fcAll)  fcAll.textContent  = allN;
+  if (fcAct)  fcAct.textContent  = escN + utcN + wkN;
+  if (fcDone) fcDone.textContent = okN;
 }
 updateStats();
 
@@ -1208,6 +1254,8 @@ function markResolved(patientId) {
     if (wave) wave.textContent = 'Complete';
     const badge = qi.querySelector('.qi-risk-badge');
     if (badge) badge.style.display = 'none';
+    const completeDiv = document.querySelector('.q-divider:last-of-type');
+    if (qi && completeDiv) completeDiv.parentNode.insertBefore(qi, completeDiv.nextSibling);
   }
   const rec = document.getElementById('rec-' + patientId);
   if (rec) {
