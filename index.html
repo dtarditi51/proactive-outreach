@@ -150,6 +150,12 @@ body {
 .day-green { color: var(--green); }
 .day-grey { color: var(--dim); }
 .qi-wave { font-size: 9px; color: var(--dim); margin-top: 1px; }
+.q-divider {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--dim);
+  padding: 7px 16px 4px; background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
 
 /* Queue footer */
 .queue-footer {
@@ -293,7 +299,7 @@ body {
 .resp-table tr { border-bottom: 1px solid var(--border); }
 .resp-table tr:last-child { border-bottom: none; }
 .resp-table td { padding: 5px 6px; vertical-align: top; font-size: 11px; }
-.rt-icon { width: 18px; color: center; }
+.rt-icon { width: 18px; text-align: center; }
 .rt-q { color: var(--mid); width: 45%; line-height: 1.35; }
 .rt-a { color: var(--text); font-weight: 500; line-height: 1.35; }
 .rt-flag { background: #fdeaea; }
@@ -455,18 +461,19 @@ body {
     <div class="queue-top">
       <div class="queue-top-row">
         <span class="queue-label">Outreach Queue</span>
-        <span class="queue-count">31 patients</span>
+        <span class="queue-count" id="queue-count-label">12 patients</span>
       </div>
       <div class="queue-filters">
-        <button class="qf on" onclick="filter('all',this)">All</button>
-        <button class="qf" onclick="filter('action',this)">Needs Action</button>
-        <button class="qf" onclick="filter('done',this)">Complete</button>
+        <button class="qf" onclick="filter('all',this)">All (12)</button>
+        <button class="qf on" onclick="filter('action',this)">Needs Action (6)</button>
+        <button class="qf" onclick="filter('done',this)">Complete (3)</button>
       </div>
     </div>
 
     <div class="queue-list" id="qList">
 
       <!-- ESCALATED -->
+      <div class="q-divider">Escalated</div>
       <div class="qi s-esc sel" id="qi-ramirez" onclick="show('ramirez')">
         <div class="qi-dot dot-red"></div>
         <div class="qi-main">
@@ -492,6 +499,7 @@ body {
       </div>
 
       <!-- UNABLE TO CONTACT -->
+      <div class="q-divider">Unable to Contact</div>
       <div class="qi s-utc" id="qi-williams" onclick="show('williams')">
         <div class="qi-dot dot-amber"></div>
         <div class="qi-main">
@@ -546,6 +554,7 @@ body {
       </div>
 
       <!-- ACTIVE -->
+      <div class="q-divider">Active</div>
       <div class="qi" id="qi-smith" onclick="show('smith')">
         <div class="qi-dot dot-blue"></div>
         <div class="qi-main">
@@ -583,6 +592,7 @@ body {
       </div>
 
       <!-- COMPLETE -->
+      <div class="q-divider">Complete</div>
       <div class="qi s-ok" id="qi-martino" onclick="show('martino')">
         <div class="qi-dot dot-green"></div>
         <div class="qi-main">
@@ -622,9 +632,9 @@ body {
     </div><!-- /queue-list -->
 
     <div class="queue-footer">
-      <div class="qf-stat"><div class="qf-dot" style="background:var(--red)"></div><span id="stat-esc">2 escalated</span></div>
-      <div class="qf-stat"><div class="qf-dot" style="background:var(--amber)"></div><span id="stat-utc">3 UTC</span></div>
-      <div class="qf-stat"><div class="qf-dot" style="background:var(--green)"></div><span id="stat-ok">11 reached</span></div>
+      <div class="qf-stat"><div class="qf-dot" style="background:var(--red)"></div><span id="stat-esc"><strong style="color:var(--red)">2</strong> escalated</span></div>
+      <div class="qf-stat"><div class="qf-dot" style="background:var(--amber)"></div><span id="stat-utc"><strong style="color:var(--amber)">3</strong> UTC</span></div>
+      <div class="qf-stat"><div class="qf-dot" style="background:var(--green)"></div><span id="stat-ok"><strong style="color:var(--green)">11</strong> complete</span></div>
     </div>
   </div><!-- /queue-panel -->
 
@@ -813,11 +823,11 @@ body {
             <div class="call-body"><div class="vm-text">Standard voicemail left. Callback number provided. No response.</div></div>
           </div>
           <div class="call-entry">
-            <div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">2</span><span class="ch-ts">Mar 28 · 10:02 AM</span><span class="ch-wave">Touch 1</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail + SMS</span><span class="ch-caret">▶</span></div></div>
+            <div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">2</span><span class="ch-ts">Mar 28 · 10:02 AM</span><span class="ch-wave">Attempt 2</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail + SMS</span><span class="ch-caret">▶</span></div></div>
             <div class="call-body"><div class="vm-text">Second attempt — voicemail + SMS. No response.</div></div>
           </div>
           <div class="call-entry">
-            <div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">3</span><span class="ch-ts">Mar 29 · 9:44 AM</span><span class="ch-wave">Touch 1</span></div><div class="ch-outcome"><span class="ch-tag ct-na">No Answer</span><span class="ch-caret">▶</span></div></div>
+            <div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">3</span><span class="ch-ts">Mar 29 · 9:44 AM</span><span class="ch-wave">Attempt 3</span></div><div class="ch-outcome"><span class="ch-tag ct-na">No Answer</span><span class="ch-caret">▶</span></div></div>
             <div class="call-body"><div class="vm-text">Mailbox full — no voicemail available. UTC threshold reached. Nurse worklist item created.</div></div>
           </div>
         </div>
@@ -1126,6 +1136,7 @@ function show(id) {
   if (rec) rec.style.display = 'flex';
 }
 show('ramirez');
+filter('action', document.querySelector('.qf.on'));
 
 // Toggle call body
 function toggle(hdr) {
@@ -1148,6 +1159,11 @@ function filter(f, btn) {
     else if (f === 'action') qi.style.display = (isEsc||isUtc||isWk) ? '' : 'none';
     else if (f === 'done')   qi.style.display = isOk ? '' : 'none';
   });
+  const selQi = document.querySelector('.qi.sel');
+  if (selQi && selQi.style.display === 'none') {
+    document.querySelectorAll('[id^="rec-"]').forEach(e => e.style.display = 'none');
+    document.getElementById('emptyState').style.display = '';
+  }
 }
 
 // Modal
@@ -1174,9 +1190,9 @@ function updateStats() {
   const esc = document.querySelectorAll('.qi.s-esc').length;
   const utc = document.querySelectorAll('.qi.s-utc').length;
   const ok  = document.querySelectorAll('.qi.s-ok').length;
-  document.getElementById('stat-esc').textContent = esc + ' escalated';
-  document.getElementById('stat-utc').textContent = utc + ' UTC';
-  document.getElementById('stat-ok').textContent  = ok  + ' reached';
+  document.getElementById('stat-esc').innerHTML = '<strong style="color:var(--red)">' + esc + '</strong> escalated';
+  document.getElementById('stat-utc').innerHTML = '<strong style="color:var(--amber)">' + utc + '</strong> UTC';
+  document.getElementById('stat-ok').innerHTML  = '<strong style="color:var(--green)">' + ok + '</strong> complete';
 }
 updateStats();
 
