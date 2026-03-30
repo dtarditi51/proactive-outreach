@@ -622,9 +622,9 @@ body {
     </div><!-- /queue-list -->
 
     <div class="queue-footer">
-      <div class="qf-stat"><div class="qf-dot" style="background:var(--red)"></div>2 escalated</div>
-      <div class="qf-stat"><div class="qf-dot" style="background:var(--amber)"></div>3 UTC</div>
-      <div class="qf-stat"><div class="qf-dot" style="background:var(--green)"></div>11 reached</div>
+      <div class="qf-stat"><div class="qf-dot" style="background:var(--red)"></div><span id="stat-esc">2 escalated</span></div>
+      <div class="qf-stat"><div class="qf-dot" style="background:var(--amber)"></div><span id="stat-utc">3 UTC</span></div>
+      <div class="qf-stat"><div class="qf-dot" style="background:var(--green)"></div><span id="stat-ok">11 reached</span></div>
     </div>
   </div><!-- /queue-panel -->
 
@@ -707,7 +707,7 @@ body {
           <div class="disp-area">
             <div class="disp-status-line dsl-red">Escalated to TCC — 9:17 AM · Awaiting nurse resolution</div>
             <div class="disp-btns">
-              <button class="disp-btn db-green" onclick="toast('Resolved — closing outreach record','✓')">Mark Resolved</button>
+              <button class="disp-btn db-green" onclick="markResolved('ramirez')">Mark Resolved</button>
               <button class="disp-btn" onclick="openModal()">Add Note</button>
             </div>
             <textarea class="disp-note" rows="3">Nurse Cimino — called back 9:31 AM. DAPT stopped — GI intolerance. Discussed with patient. Provider tasked to Dr. Kaddissi for alternative P2Y12 consideration. Patient agreed to restart pending provider guidance.</textarea>
@@ -776,7 +776,7 @@ body {
           <div class="disp-area">
             <div class="disp-status-line dsl-red">Escalated to TCC — 9:05 AM · Dr. Costello EP team notified</div>
             <div class="disp-btns">
-              <button class="disp-btn db-green" onclick="toast('Resolved — record closed','✓')">Mark Resolved</button>
+              <button class="disp-btn db-green" onclick="markResolved('chen')">Mark Resolved</button>
               <button class="disp-btn" onclick="openModal()">Add Note</button>
             </div>
             <textarea class="disp-note" rows="2">Patient called back 9:12 AM — same-day device interrogation confirmed 11:30 AM Dr. Costello. Patient instructed not to drive.</textarea>
@@ -829,6 +829,7 @@ body {
               <button class="disp-btn db-red" onclick="toast('Escalating to triage queue — CLI patient D+4','🚨')">Escalate to Triage</button>
               <button class="disp-btn" onclick="toast('Logging manual call — (856) 555-3341','📞')">Log Manual Call</button>
               <button class="disp-btn" onclick="toast('Notifying Dr. Tarditi — unable to contact CLI D+4','👨‍⚕️')">Notify Attending</button>
+              <button class="disp-btn db-green" onclick="markResolved('williams')">Mark Resolved</button>
             </div>
             <textarea class="disp-note" rows="2" placeholder="Document manual contact attempts here…">Assigned to Nurse Andrews. Attempting family emergency contact via NextGen demographics.</textarea>
           </div>
@@ -901,7 +902,7 @@ body {
           <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">2</span><span class="ch-ts">Mar 26 · 10:15 AM</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail + SMS</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">Second attempt. No response.</div></div></div>
           <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">3</span><span class="ch-ts">Mar 27 · 11:30 AM</span></div><div class="ch-outcome"><span class="ch-tag ct-na">No Answer</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">UTC threshold reached. Nurse worklist created.</div></div></div>
         </div>
-        <div><div class="sec-title">Nurse Action</div><div class="disp-area"><div class="disp-status-line dsl-amber">3/3 automated attempts exhausted</div><div class="disp-btns"><button class="disp-btn db-red" onclick="toast('Escalating to triage — PVI patient UTC D+5','🚨')">Escalate to Triage</button><button class="disp-btn" onclick="toast('Logging manual call','📞')">Log Manual Call</button></div><textarea class="disp-note" rows="2" placeholder="Note…"></textarea></div></div>
+        <div><div class="sec-title">Nurse Action</div><div class="disp-area"><div class="disp-status-line dsl-amber">3/3 automated attempts exhausted</div><div class="disp-btns"><button class="disp-btn db-red" onclick="toast('Escalating to triage — PVI patient UTC D+5','🚨')">Escalate to Triage</button><button class="disp-btn" onclick="toast('Logging manual call','📞')">Log Manual Call</button><button class="disp-btn db-green" onclick="markResolved('okonkwo')">Mark Resolved</button></div><textarea class="disp-note" rows="2" placeholder="Note…"></textarea></div></div>
       </div>
     </div>
 
@@ -925,7 +926,7 @@ body {
           <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">2</span><span class="ch-ts">Mar 29 · 10:00 AM</span><span class="ch-wave">Touch 2</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail + SMS</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">No response.</div></div></div>
           <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">3</span><span class="ch-ts">Today · 11:15 AM</span><span class="ch-wave">Touch 2</span></div><div class="ch-outcome"><span class="ch-tag ct-na">No Answer</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">UTC threshold reached.</div></div></div>
         </div>
-        <div><div class="sec-title">Nurse Action</div><div class="disp-area"><div class="disp-btns"><button class="disp-btn" onclick="toast('Logging manual call','📞')">Log Manual Call</button><button class="disp-btn db-green" onclick="toast('Touch 2 closed — UTC documented','✓')">Close T2 — UTC</button></div><textarea class="disp-note" rows="2" placeholder="Note…"></textarea></div></div>
+        <div><div class="sec-title">Nurse Action</div><div class="disp-area"><div class="disp-btns"><button class="disp-btn" onclick="toast('Logging manual call','📞')">Log Manual Call</button><button class="disp-btn db-green" onclick="markResolved('patel')">Close T2 — UTC</button></div><textarea class="disp-note" rows="2" placeholder="Note…"></textarea></div></div>
       </div>
     </div>
 
@@ -1113,6 +1114,45 @@ function openModal() { document.getElementById('overlay').classList.add('open');
 function closeModal(e) {
   if (!e || e.target === document.getElementById('overlay'))
     document.getElementById('overlay').classList.remove('open');
+}
+
+// Live queue stats
+function updateStats() {
+  const esc = document.querySelectorAll('.qi.s-esc').length;
+  const utc = document.querySelectorAll('.qi.s-utc').length;
+  const ok  = document.querySelectorAll('.qi.s-ok').length;
+  document.getElementById('stat-esc').textContent = esc + ' escalated';
+  document.getElementById('stat-utc').textContent = utc + ' UTC';
+  document.getElementById('stat-ok').textContent  = ok  + ' reached';
+}
+updateStats();
+
+// Mark Resolved
+function markResolved(patientId) {
+  const qi = document.getElementById('qi-' + patientId);
+  if (qi) {
+    qi.classList.remove('s-esc', 's-utc', 's-wknd');
+    qi.classList.add('s-ok');
+    const dot = qi.querySelector('.qi-dot');
+    if (dot) dot.className = 'qi-dot dot-green';
+    const wave = qi.querySelector('.qi-wave');
+    if (wave) wave.textContent = 'Complete';
+    const badge = qi.querySelector('.qi-risk-badge');
+    if (badge) badge.style.display = 'none';
+  }
+  const rec = document.getElementById('rec-' + patientId);
+  if (rec) {
+    const tag = rec.querySelector('.rec-status-tag');
+    if (tag) { tag.className = 'rec-status-tag tag-ok'; tag.textContent = 'Complete'; }
+    const dsl = rec.querySelector('.disp-status-line');
+    if (dsl) { dsl.className = 'disp-status-line dsl-green'; dsl.textContent = 'Resolved — outreach record closed'; }
+    const na = rec.querySelector('.next-action');
+    if (na) { na.className = 'next-action na-green'; na.querySelector('.na-text').textContent = 'Outreach sequence closed — no further action required.'; }
+    const escBanner = rec.querySelector('.esc-banner');
+    if (escBanner) escBanner.style.display = 'none';
+  }
+  updateStats();
+  toast('Resolved — record closed', '✓');
 }
 
 // Toast
