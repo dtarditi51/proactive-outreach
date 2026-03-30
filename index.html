@@ -1226,7 +1226,8 @@ function openInTCC(patientId, flag, mrn, name) {
     patientId, patientMRN: mrn, patientName: name,
     flag, source: 'proactive_outreach', timestamp: new Date().toISOString()
   });
-  window.open('https://nextgencommand.netlify.app', '_blank');
+  OutreachDataBus.publish('outreach:select_patient', { mrn, patientName: name, flag });
+  window.open('https://nextgencommand.netlify.app#mrn=' + mrn, '_blank');
 }
 
 // Live queue stats
