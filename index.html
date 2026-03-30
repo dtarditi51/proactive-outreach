@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proactive Outreach — The Heart House</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:       #f4f6f9;
+  --surface:  #ffffff;
+  --border:   #e4e8ee;
+  --border2:  #d0d7e2;
+  --text:     #1a2332;
+  --mid:      #5a6a7e;
+  --dim:      #9ba8b8;
+  --navy:     #1e2d40;
+  --navy2:    #263548;
+  --blue:     #2b7de9;
+  --green:    #1a9e5c;
+  --amber:    #d97706;
+  --red:      #dc3545;
+  --red2:     #b02130;
+  --teal:     #0891b2;
+  --purple:   #7c3aed;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ─── HEADER ─────────────────────────────── */
+.header {
+  height: 48px;
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0;
+  border-bottom: 2px solid var(--teal);
+}
+.hdr-left { display: flex; align-items: center; gap: 20px; }
+.hdr-practice {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--teal);
+}
+.hdr-title { font-size: 14px; font-weight: 600; color: #fff; }
+.hdr-right { display: flex; align-items: center; gap: 16px; }
+.hdr-pill {
+  font-size: 10px; padding: 3px 9px; border-radius: 10px;
+  font-weight: 600; letter-spacing: 0.3px;
+}
+.pill-live { background: rgba(26,158,92,0.18); color: #34d399; border: 1px solid rgba(26,158,92,0.3); }
+.pill-window { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
+.hdr-tcc {
+  font-size: 11px; color: rgba(255,255,255,0.45);
+  cursor: pointer; padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 4px;
+  transition: all 0.15s;
+}
+.hdr-tcc:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+.hdr-clock { font-size: 11px; color: rgba(255,255,255,0.35); font-variant-numeric: tabular-nums; min-width: 60px; text-align: right; }
+
+/* ─── MAIN ───────────────────────────────── */
+.main { display: flex; flex: 1; overflow: hidden; }
+
+/* ─── QUEUE ──────────────────────────────── */
+.queue-panel {
+  width: 280px; flex-shrink: 0;
+  display: flex; flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+}
+.queue-top {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.queue-top-row {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 8px;
+}
+.queue-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--mid);
+}
+.queue-count { font-size: 11px; color: var(--dim); }
+.queue-filters { display: flex; gap: 4px; }
+.qf {
+  font-size: 10px; padding: 3px 8px; border-radius: 10px;
+  border: 1px solid var(--border2); color: var(--mid);
+  background: transparent; cursor: pointer;
+  font-family: inherit; transition: all 0.12s;
+}
+.qf:hover { border-color: var(--blue); color: var(--blue); }
+.qf.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.qf.on-red { background: var(--red); border-color: var(--red); color: #fff; }
+
+.queue-list { flex: 1; overflow-y: auto; }
+.queue-list::-webkit-scrollbar { width: 3px; }
+.queue-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Queue item */
+.qi {
+  display: flex; align-items: center; gap: 0;
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.1s;
+  border-left: 3px solid transparent;
+}
+.qi:hover { background: #f0f5ff; }
+.qi.sel { background: #e8f0fe; border-left-color: var(--blue); }
+.qi.s-esc { border-left-color: var(--red); }
+.qi.s-utc { border-left-color: var(--amber); }
+.qi.s-ok  { border-left-color: var(--green); opacity: 0.7; }
+.qi.s-wknd { border-left-color: var(--purple); }
+
+.qi-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  flex-shrink: 0; margin-right: 10px;
+}
+.dot-red { background: var(--red); }
+.dot-amber { background: var(--amber); }
+.dot-blue { background: var(--blue); animation: blink 1.4s infinite; }
+.dot-green { background: var(--green); }
+.dot-grey { background: var(--dim); }
+.dot-purple { background: var(--purple); }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.qi-main { flex: 1; min-width: 0; }
+.qi-name { font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qi-proc { font-size: 10px; color: var(--mid); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.qi-right { text-align: right; flex-shrink: 0; margin-left: 8px; }
+.qi-day {
+  font-size: 11px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.day-red { color: var(--red); }
+.day-amber { color: var(--amber); }
+.day-green { color: var(--green); }
+.day-grey { color: var(--dim); }
+.qi-wave { font-size: 9px; color: var(--dim); margin-top: 1px; }
+
+/* Queue footer */
+.queue-footer {
+  padding: 8px 16px; border-top: 1px solid var(--border);
+  font-size: 10px; color: var(--dim); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.qf-stat { display: flex; align-items: center; gap: 4px; }
+.qf-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+/* ─── RECORD ─────────────────────────────── */
+.record-panel {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; background: var(--bg);
+}
+
+.record-empty {
+  flex: 1; display: flex; align-items: center;
+  justify-content: center; flex-direction: column;
+  gap: 8px; color: var(--dim);
+}
+.record-empty-icon { font-size: 32px; opacity: 0.3; }
+.record-empty-text { font-size: 12px; }
+
+/* Escalation banner — only when needed */
+.esc-banner {
+  background: var(--red2);
+  padding: 10px 20px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0; gap: 16px;
+}
+.esc-banner-left { display: flex; align-items: center; gap: 10px; }
+.esc-pulse { width: 8px; height: 8px; border-radius: 50%; background: #ff6b6b; animation: blink 1s infinite; flex-shrink: 0; }
+.esc-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+.esc-flag { font-size: 12px; font-weight: 700; color: #fff; margin-top: 1px; }
+.esc-quote { font-size: 11px; color: rgba(255,255,255,0.65); font-style: italic; }
+.esc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.esc-btn {
+  font-size: 11px; font-weight: 600; padding: 6px 14px;
+  border-radius: 4px; border: none; cursor: pointer; font-family: inherit;
+}
+.esc-primary { background: #fff; color: var(--red2); }
+.esc-primary:hover { background: #ffe4e4; }
+.esc-secondary { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+.esc-secondary:hover { background: rgba(255,255,255,0.2); }
+
+/* Record header */
+.rec-hdr {
+  background: var(--surface);
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.rec-hdr-top {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; margin-bottom: 10px;
+}
+.rec-name { font-size: 17px; font-weight: 700; }
+.rec-sub { font-size: 11px; color: var(--mid); margin-top: 2px; }
+.rec-status-tag {
+  font-size: 10px; font-weight: 700; padding: 3px 10px;
+  border-radius: 10px; letter-spacing: 0.4px; white-space: nowrap;
+}
+.tag-esc { background: #fdeaea; color: var(--red2); }
+.tag-utc { background: #fff7ed; color: #92400e; }
+.tag-ok  { background: #f0fdf4; color: #166534; }
+.tag-pend { background: #f1f5f9; color: var(--mid); }
+.tag-call { background: #eff6ff; color: #1d4ed8; }
+.tag-wknd { background: #f5f3ff; color: #5b21b6; }
+.tag-inb { background: #f5f3ff; color: #5b21b6; }
+
+.rec-meta {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 0; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 5px;
+  overflow: hidden;
+}
+.rec-meta-cell {
+  padding: 7px 12px; border-right: 1px solid var(--border);
+}
+.rec-meta-cell:last-child { border-right: none; }
+.rmc-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--dim); margin-bottom: 2px; }
+.rmc-value { font-size: 12px; font-weight: 500; color: var(--text); }
+.rmc-day { font-size: 18px; font-weight: 800; }
+
+/* Record body */
+.rec-body {
+  flex: 1; overflow-y: auto; padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.rec-body::-webkit-scrollbar { width: 3px; }
+.rec-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Section */
+.sec-title {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--dim);
+  margin-bottom: 6px; padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Call log */
+.call-entry {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 5px; overflow: hidden; margin-bottom: 6px;
+}
+.call-entry:last-child { margin-bottom: 0; }
+
+.call-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; cursor: pointer; gap: 12px;
+}
+.call-hdr:hover { background: #f8faff; }
+.ch-left { display: flex; align-items: center; gap: 8px; }
+.ch-num { font-size: 10px; color: var(--dim); width: 16px; }
+.ch-ts { font-size: 11px; font-weight: 500; }
+.ch-wave { font-size: 9px; color: var(--mid); }
+.ch-outcome { display: flex; align-items: center; gap: 8px; }
+.ch-tag {
+  font-size: 9px; font-weight: 700; padding: 2px 7px;
+  border-radius: 8px; letter-spacing: 0.3px; text-transform: uppercase;
+}
+.ct-flag  { background: #fdeaea; color: var(--red2); }
+.ct-ok    { background: #f0fdf4; color: #166534; }
+.ct-vm    { background: #fff7ed; color: #92400e; }
+.ct-na    { background: #f1f5f9; color: var(--mid); }
+.ct-call  { background: #eff6ff; color: #1d4ed8; }
+.ch-caret { font-size: 10px; color: var(--dim); transition: transform 0.2s; user-select: none; }
+.ch-caret.open { transform: rotate(90deg); }
+
+.call-body {
+  display: none; padding: 10px 12px;
+  border-top: 1px solid var(--border); background: #fafcff;
+}
+.call-body.open { display: block; }
+.call-meta { font-size: 10px; color: var(--dim); margin-bottom: 8px; }
+
+/* Response rows */
+.resp-table { width: 100%; border-collapse: collapse; }
+.resp-table tr { border-bottom: 1px solid var(--border); }
+.resp-table tr:last-child { border-bottom: none; }
+.resp-table td { padding: 5px 6px; vertical-align: top; font-size: 11px; }
+.rt-icon { width: 18px; color: center; }
+.rt-q { color: var(--mid); width: 45%; line-height: 1.35; }
+.rt-a { color: var(--text); font-weight: 500; line-height: 1.35; }
+.rt-flag { background: #fdeaea; }
+.rt-warn { background: #fffbeb; }
+.rt-ok { background: #fafff9; }
+
+.call-audio {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);
+}
+.audio-btn {
+  font-size: 10px; padding: 4px 10px;
+  background: var(--navy); color: #fff; border: none;
+  border-radius: 4px; cursor: pointer; font-family: inherit;
+}
+.audio-btn:hover { background: var(--navy2); }
+.call-flag-note { font-size: 10px; color: var(--red); font-weight: 600; }
+
+.vm-text { font-size: 11px; color: var(--mid); font-style: italic; padding: 2px 0; }
+
+/* Disposition */
+.disp-area {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 5px; padding: 12px;
+}
+.disp-status-line {
+  font-size: 11px; font-weight: 600; margin-bottom: 10px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.dsl-red { color: var(--red); }
+.dsl-amber { color: var(--amber); }
+.dsl-green { color: var(--green); }
+.disp-btns { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.disp-btn {
+  font-size: 11px; font-weight: 600; padding: 6px 12px;
+  border-radius: 4px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text);
+  cursor: pointer; font-family: inherit; transition: all 0.12s;
+}
+.disp-btn:hover { background: #f0f5ff; border-color: var(--blue); color: var(--blue); }
+.db-red { border-color: var(--red); color: var(--red); }
+.db-red:hover { background: var(--red); color: #fff; }
+.db-green { border-color: var(--green); color: var(--green); }
+.db-green:hover { background: var(--green); color: #fff; }
+.disp-note {
+  width: 100%; font-size: 11px; padding: 7px 10px;
+  border: 1px solid var(--border); border-radius: 4px;
+  font-family: inherit; resize: none; color: var(--text);
+  background: var(--bg); line-height: 1.5;
+}
+.disp-note:focus { outline: none; border-color: var(--blue); background: var(--surface); }
+
+/* Informational states */
+.info-block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 5px; padding: 12px; font-size: 11px; line-height: 1.6;
+}
+.ib-purple { border-left: 3px solid var(--purple); }
+.ib-blue   { border-left: 3px solid var(--blue); }
+.ib-green  { border-left: 3px solid var(--green); }
+.ib-amber  { border-left: 3px solid var(--amber); }
+.ib-title  { font-weight: 700; margin-bottom: 3px; }
+
+/* Modal */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4); z-index: 999;
+  align-items: center; justify-content: center;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border-radius: 6px; width: 420px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+}
+.modal-hdr {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--navy); border-radius: 6px 6px 0 0;
+}
+.modal-title { font-size: 13px; font-weight: 700; color: #fff; }
+.modal-x { background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 16px; }
+.modal-x:hover { color: #fff; }
+.modal-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.mf label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--dim); display: block; margin-bottom: 4px; }
+.mf select, .mf textarea {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: 4px; font-family: inherit; font-size: 12px; color: var(--text);
+}
+.mf textarea { resize: none; height: 72px; }
+.modal-feet { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 6px; }
+.btn-cancel { padding: 7px 14px; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--mid); cursor: pointer; font-family: inherit; }
+.btn-primary { padding: 7px 16px; border-radius: 4px; border: none; background: var(--blue); color: #fff; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-primary:hover { background: #1a6dd4; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+  background: var(--navy); color: #fff; padding: 10px 16px;
+  border-radius: 5px; font-size: 12px; font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  display: none; align-items: center; gap: 8px;
+  border-left: 3px solid var(--teal); max-width: 320px;
+}
+.toast.on { display: flex; animation: tin 0.2s ease; }
+@keyframes tin { from{transform:translateY(10px);opacity:0;} to{transform:translateY(0);opacity:1;} }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="hdr-left">
+    <span class="hdr-practice">The Heart House</span>
+    <span class="hdr-title">Proactive Outreach</span>
+  </div>
+  <div class="hdr-right">
+    <span class="hdr-pill pill-live">● Ava Active</span>
+    <span class="hdr-pill pill-window">Mon–Fri · 8 AM – 3 PM</span>
+    <span class="hdr-tcc" onclick="toast('Opening Triage Command Center','↗')">↗ TCC</span>
+    <span class="hdr-clock" id="clock"></span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- QUEUE -->
+  <div class="queue-panel">
+    <div class="queue-top">
+      <div class="queue-top-row">
+        <span class="queue-label">Outreach Queue</span>
+        <span class="queue-count">31 patients</span>
+      </div>
+      <div class="queue-filters">
+        <button class="qf on" onclick="filter('all',this)">All</button>
+        <button class="qf" onclick="filter('action',this)">Needs Action</button>
+        <button class="qf" onclick="filter('done',this)">Complete</button>
+      </div>
+    </div>
+
+    <div class="queue-list" id="qList">
+
+      <!-- ESCALATED -->
+      <div class="qi s-esc sel" id="qi-ramirez" onclick="show('ramirez')">
+        <div class="qi-dot dot-red"></div>
+        <div class="qi-main">
+          <div class="qi-name">Ramirez, Carlos</div>
+          <div class="qi-proc">PCI / Stent · DAPT non-compliance</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-red">D+3</div>
+          <div class="qi-wave">T1 · Escalated</div>
+        </div>
+      </div>
+
+      <div class="qi s-esc" id="qi-chen" onclick="show('chen')">
+        <div class="qi-dot dot-red"></div>
+        <div class="qi-main">
+          <div class="qi-name">Chen, Margaret</div>
+          <div class="qi-proc">ICD Implant · Device shock</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-red">D+2</div>
+          <div class="qi-wave">T1 · Escalated</div>
+        </div>
+      </div>
+
+      <!-- UNABLE TO CONTACT -->
+      <div class="qi s-utc" id="qi-williams" onclick="show('williams')">
+        <div class="qi-dot dot-amber"></div>
+        <div class="qi-main">
+          <div class="qi-name">Williams, Dorothy</div>
+          <div class="qi-proc">Peripheral Intervention · CLI</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-red">D+4</div>
+          <div class="qi-wave">T1 · 3/3 attempts</div>
+        </div>
+      </div>
+
+      <div class="qi s-utc" id="qi-okonkwo" onclick="show('okonkwo')">
+        <div class="qi-dot dot-amber"></div>
+        <div class="qi-main">
+          <div class="qi-name">Okonkwo, James</div>
+          <div class="qi-proc">AFib Ablation (PVI)</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-amber">D+5</div>
+          <div class="qi-wave">T1 · 3/3 attempts</div>
+        </div>
+      </div>
+
+      <div class="qi s-utc" id="qi-patel" onclick="show('patel')">
+        <div class="qi-dot dot-amber"></div>
+        <div class="qi-main">
+          <div class="qi-name">Patel, Anita</div>
+          <div class="qi-proc">TAVR · Transfemoral</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-amber">D+22</div>
+          <div class="qi-wave">T2 · 3/3 attempts</div>
+        </div>
+      </div>
+
+      <!-- WEEKEND BACKLOG -->
+      <div class="qi s-wknd" id="qi-nguyen" onclick="show('nguyen')">
+        <div class="qi-dot dot-purple"></div>
+        <div class="qi-main">
+          <div class="qi-name">Nguyen, Thomas</div>
+          <div class="qi-proc">PCI / Stent · Weekend discharge</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-red">D+3</div>
+          <div class="qi-wave">T1 · Priority</div>
+        </div>
+      </div>
+
+      <!-- ACTIVE -->
+      <div class="qi" id="qi-smith" onclick="show('smith')">
+        <div class="qi-dot dot-blue"></div>
+        <div class="qi-main">
+          <div class="qi-name">Smith, Robert</div>
+          <div class="qi-proc">Diagnostic Cath · Radial</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-amber">D+2</div>
+          <div class="qi-wave">T1 · Calling now</div>
+        </div>
+      </div>
+
+      <div class="qi" id="qi-garcia" onclick="show('garcia')">
+        <div class="qi-dot dot-amber"></div>
+        <div class="qi-main">
+          <div class="qi-name">Garcia, Luis</div>
+          <div class="qi-proc">Peripheral Angiography</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-amber">D+1</div>
+          <div class="qi-wave">T1 · Voicemail left</div>
+        </div>
+      </div>
+
+      <div class="qi" id="qi-johnson" onclick="show('johnson')">
+        <div class="qi-dot dot-grey"></div>
+        <div class="qi-main">
+          <div class="qi-name">Johnson, Patricia</div>
+          <div class="qi-proc">Device Implant · PPM</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-green">D+21</div>
+          <div class="qi-wave">T2 · Pending</div>
+        </div>
+      </div>
+
+      <!-- COMPLETE -->
+      <div class="qi s-ok" id="qi-martino" onclick="show('martino')">
+        <div class="qi-dot dot-green"></div>
+        <div class="qi-main">
+          <div class="qi-name">Martino, Frank</div>
+          <div class="qi-proc">AFib Ablation (PVI)</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-green">D+2</div>
+          <div class="qi-wave">T1 · Complete</div>
+        </div>
+      </div>
+
+      <div class="qi s-ok" id="qi-thompson" onclick="show('thompson')">
+        <div class="qi-dot dot-green"></div>
+        <div class="qi-main">
+          <div class="qi-name">Thompson, Helen</div>
+          <div class="qi-proc">PCI / Stent</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-green">D+20</div>
+          <div class="qi-wave">T2 · Complete</div>
+        </div>
+      </div>
+
+      <div class="qi s-ok" id="qi-diaz" onclick="show('diaz')">
+        <div class="qi-dot dot-purple"></div>
+        <div class="qi-main">
+          <div class="qi-name">Diaz, Maria</div>
+          <div class="qi-proc">Diagnostic Cath · Inbound resolved</div>
+        </div>
+        <div class="qi-right">
+          <div class="qi-day day-green">D+1</div>
+          <div class="qi-wave">T1 · Inbound</div>
+        </div>
+      </div>
+
+    </div><!-- /queue-list -->
+
+    <div class="queue-footer">
+      <div class="qf-stat"><div class="qf-dot" style="background:var(--red)"></div>2 escalated</div>
+      <div class="qf-stat"><div class="qf-dot" style="background:var(--amber)"></div>3 UTC</div>
+      <div class="qf-stat"><div class="qf-dot" style="background:var(--green)"></div>11 reached</div>
+    </div>
+  </div><!-- /queue-panel -->
+
+  <!-- RECORD PANEL -->
+  <div class="record-panel" id="recordPanel">
+
+    <!-- Empty state -->
+    <div class="record-empty" id="emptyState">
+      <div class="record-empty-icon">○</div>
+      <div class="record-empty-text">Select a patient</div>
+    </div>
+
+    <!-- ── RAMIREZ ── Escalated DAPT -->
+    <div id="rec-ramirez" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="esc-banner">
+        <div class="esc-banner-left">
+          <div class="esc-pulse"></div>
+          <div>
+            <div class="esc-label">Escalated to Triage</div>
+            <div class="esc-flag">DAPT_NON_COMPLIANCE — patient stopped Plavix</div>
+          </div>
+          <div class="esc-quote">"It was upsetting my stomach so I stopped it."</div>
+        </div>
+        <div class="esc-actions">
+          <button class="esc-btn esc-primary" onclick="toast('Transferring to TCC — DAPT_NON_COMPLIANCE active','🚨')">Open in TCC</button>
+          <button class="esc-btn esc-secondary" onclick="toast('Calling (856) 555-4481 on direct DID','📞')">Call Patient</button>
+        </div>
+      </div>
+      <div class="rec-hdr">
+        <div class="rec-hdr-top">
+          <div>
+            <div class="rec-name">Ramirez, Carlos</div>
+            <div class="rec-sub">MRN 443821 · DOB 04/17/1961 · (856) 555-4481</div>
+          </div>
+          <span class="rec-status-tag tag-esc">Escalated</span>
+        </div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">PCI — DES to LAD</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 27, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Cooper University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Kaddissi</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--red)">D+3</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div>
+          <div class="sec-title">Call Log</div>
+          <div class="call-entry">
+            <div class="call-hdr" onclick="toggle(this)">
+              <div class="ch-left">
+                <span class="ch-num">1</span>
+                <span class="ch-ts">Today · 9:14 AM</span>
+                <span class="ch-wave">Touch 1 · 24h</span>
+              </div>
+              <div class="ch-outcome">
+                <span class="ch-tag ct-flag">Red Flag</span>
+                <span class="ch-caret open">▶</span>
+              </div>
+            </div>
+            <div class="call-body open">
+              <div class="call-meta">Session AVA-20260330-443821 · 3m 42s</div>
+              <table class="resp-table">
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Chest pain at rest or nocturnal?</td><td class="rt-a">No</td></tr>
+                <tr class="rt-flag"><td class="rt-icon">🚨</td><td class="rt-q">DAPT — both medications taken?</td><td class="rt-a">Stopped Plavix — GI intolerance. Still taking aspirin only.</td></tr>
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Access site (groin) — swelling, lump, bleeding?</td><td class="rt-a">Small stable bruise, no growth</td></tr>
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Shortness of breath new or worsening?</td><td class="rt-a">No</td></tr>
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Discharge prescriptions filled and started?</td><td class="rt-a">Yes — except Plavix</td></tr>
+              </table>
+              <div class="call-audio">
+                <button class="audio-btn" onclick="toast('Loading recording AVA-20260330-443821','🎵')">▶ Play · 3:42</button>
+                <span class="call-flag-note">DAPT_NON_COMPLIANCE fired · Escalated to TCC 9:17 AM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="sec-title">Nurse Disposition</div>
+          <div class="disp-area">
+            <div class="disp-status-line dsl-red">Escalated to TCC — 9:17 AM · Awaiting nurse resolution</div>
+            <div class="disp-btns">
+              <button class="disp-btn db-green" onclick="toast('Resolved — closing outreach record','✓')">Mark Resolved</button>
+              <button class="disp-btn" onclick="openModal()">Add Note</button>
+            </div>
+            <textarea class="disp-note" rows="3">Nurse Cimino — called back 9:31 AM. DAPT stopped — GI intolerance. Discussed with patient. Provider tasked to Dr. Kaddissi for alternative P2Y12 consideration. Patient agreed to restart pending provider guidance.</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CHEN ── Device shock -->
+    <div id="rec-chen" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="esc-banner">
+        <div class="esc-banner-left">
+          <div class="esc-pulse"></div>
+          <div>
+            <div class="esc-label">Escalated to Triage</div>
+            <div class="esc-flag">DEVICE_SHOCK — single shock at rest, 8:45 AM</div>
+          </div>
+          <div class="esc-quote">"My device gave me a shock when I was just sitting in my chair."</div>
+        </div>
+        <div class="esc-actions">
+          <button class="esc-btn esc-primary" onclick="toast('Transferring to TCC — DEVICE_SHOCK — EP notified','🚨')">Open in TCC</button>
+          <button class="esc-btn esc-secondary" onclick="toast('Calling (856) 555-7720','📞')">Call Patient</button>
+        </div>
+      </div>
+      <div class="rec-hdr">
+        <div class="rec-hdr-top">
+          <div><div class="rec-name">Chen, Margaret</div><div class="rec-sub">MRN 227614 · DOB 09/03/1955 · (856) 555-7720</div></div>
+          <span class="rec-status-tag tag-esc">Escalated</span>
+        </div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">ICD — dual-lead</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 28, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Jefferson University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Costello (EP)</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--red)">D+2</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div>
+          <div class="sec-title">Call Log</div>
+          <div class="call-entry">
+            <div class="call-hdr" onclick="toggle(this)">
+              <div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Today · 9:02 AM</span><span class="ch-wave">Touch 1 · 24h</span></div>
+              <div class="ch-outcome"><span class="ch-tag ct-flag">Red Flag</span><span class="ch-caret open">▶</span></div>
+            </div>
+            <div class="call-body open">
+              <div class="call-meta">Session AVA-20260330-227614 · 2m 18s</div>
+              <table class="resp-table">
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Wound site — redness, drainage, odor?</td><td class="rt-a">Mild bruising only, no drainage</td></tr>
+                <tr class="rt-flag"><td class="rt-icon">🚨</td><td class="rt-q">Device shock — jolt or kick in chest?</td><td class="rt-a">YES — single shock at rest 8:45 AM. Felt like a punch in chest.</td></tr>
+                <tr class="rt-warn"><td class="rt-icon">⚠</td><td class="rt-q">Dizziness or near-syncope after shock?</td><td class="rt-a">Briefly lightheaded — resolved within a minute</td></tr>
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Device beeping or audible alert?</td><td class="rt-a">No</td></tr>
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Fever &gt;100.5°F?</td><td class="rt-a">No</td></tr>
+              </table>
+              <div class="call-audio">
+                <button class="audio-btn" onclick="toast('Loading recording AVA-20260330-227614','🎵')">▶ Play · 2:18</button>
+                <span class="call-flag-note">DEVICE_SHOCK fired · Escalated 9:05 AM · EP team notified</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="sec-title">Nurse Disposition</div>
+          <div class="disp-area">
+            <div class="disp-status-line dsl-red">Escalated to TCC — 9:05 AM · Dr. Costello EP team notified</div>
+            <div class="disp-btns">
+              <button class="disp-btn db-green" onclick="toast('Resolved — record closed','✓')">Mark Resolved</button>
+              <button class="disp-btn" onclick="openModal()">Add Note</button>
+            </div>
+            <textarea class="disp-note" rows="2">Patient called back 9:12 AM — same-day device interrogation confirmed 11:30 AM Dr. Costello. Patient instructed not to drive.</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WILLIAMS ── UTC CLI -->
+    <div id="rec-williams" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top">
+          <div><div class="rec-name">Williams, Dorothy</div><div class="rec-sub">MRN 551209 · DOB 11/22/1950 · (856) 555-3341</div></div>
+          <span class="rec-status-tag tag-utc">Unable to Contact</span>
+        </div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">Fem-Pop Stent (CLI)</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 26, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Heart House OBL</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Tarditi</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--red)">D+4</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="info-block ib-amber">
+          <div class="ib-title">CLI patient — 3 automated attempts exhausted · Manual nurse outreach required</div>
+          D+4 falls within the primary limb perfusion risk window. If manual contact fails today, escalate to attending.
+        </div>
+        <div>
+          <div class="sec-title">Attempt Log</div>
+          <div class="call-entry">
+            <div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Mar 27 · 9:15 AM</span><span class="ch-wave">Touch 1</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail</span><span class="ch-caret">▶</span></div></div>
+            <div class="call-body"><div class="vm-text">Standard voicemail left. Callback number provided. No response.</div></div>
+          </div>
+          <div class="call-entry">
+            <div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">2</span><span class="ch-ts">Mar 28 · 10:02 AM</span><span class="ch-wave">Touch 1</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail + SMS</span><span class="ch-caret">▶</span></div></div>
+            <div class="call-body"><div class="vm-text">Second attempt — voicemail + SMS. No response.</div></div>
+          </div>
+          <div class="call-entry">
+            <div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">3</span><span class="ch-ts">Mar 29 · 9:44 AM</span><span class="ch-wave">Touch 1</span></div><div class="ch-outcome"><span class="ch-tag ct-na">No Answer</span><span class="ch-caret">▶</span></div></div>
+            <div class="call-body"><div class="vm-text">Mailbox full — no voicemail available. UTC threshold reached. Nurse worklist item created.</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="sec-title">Nurse Action</div>
+          <div class="disp-area">
+            <div class="disp-status-line dsl-amber">3/3 automated attempts exhausted — manual contact required</div>
+            <div class="disp-btns">
+              <button class="disp-btn db-red" onclick="toast('Escalating to triage queue — CLI patient D+4','🚨')">Escalate to Triage</button>
+              <button class="disp-btn" onclick="toast('Logging manual call — (856) 555-3341','📞')">Log Manual Call</button>
+              <button class="disp-btn" onclick="toast('Notifying Dr. Tarditi — unable to contact CLI D+4','👨‍⚕️')">Notify Attending</button>
+            </div>
+            <textarea class="disp-note" rows="2" placeholder="Document manual contact attempts here…">Assigned to Nurse Andrews. Attempting family emergency contact via NextGen demographics.</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MARTINO ── Complete, no concerns -->
+    <div id="rec-martino" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top">
+          <div><div class="rec-name">Martino, Frank</div><div class="rec-sub">MRN 334872 · DOB 06/18/1958 · (856) 555-9012</div></div>
+          <span class="rec-status-tag tag-ok">Complete — No Concerns</span>
+        </div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">PVI — AFib Ablation</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 28, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Jefferson University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Levi (EP)</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--green)">D+2</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="info-block ib-green">
+          <div class="ib-title">Touch 1 complete · No clinical concerns · Touch 2 queued April 17</div>
+          Anticoagulation compliant. Mild expected pleuritic discomfort — blanking period script delivered. Palpitations normalized to patient.
+        </div>
+        <div>
+          <div class="sec-title">Call Log</div>
+          <div class="call-entry">
+            <div class="call-hdr" onclick="toggle(this)">
+              <div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Today · 8:47 AM</span><span class="ch-wave">Touch 1 · 24h</span></div>
+              <div class="ch-outcome"><span class="ch-tag ct-ok">No Concerns</span><span class="ch-caret open">▶</span></div>
+            </div>
+            <div class="call-body open">
+              <div class="call-meta">Session AVA-20260330-334872 · 4m 11s</div>
+              <table class="resp-table">
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Chest pain or dyspnea?</td><td class="rt-a">Mild pleuritic discomfort with deep breath — improving. Expected post-ablation inflammation. No escalation.</td></tr>
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Dyspnea at rest?</td><td class="rt-a">No — exertional only, mild</td></tr>
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Bilateral groin sites?</td><td class="rt-a">Bilateral bruising, small lump left &lt; quarter, non-throbbing — normal</td></tr>
+                <tr class="rt-warn"><td class="rt-icon">⚠</td><td class="rt-q">Palpitations / irregular rhythm?</td><td class="rt-a">Occasional irregular beats — blanking period script delivered. On Eliquis, stable, no hemodynamic symptoms. Directed to business hours call only.</td></tr>
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Anticoagulation taken daily?</td><td class="rt-a">Yes — Eliquis 5mg BID, compliant</td></tr>
+                <tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Fever &gt;100°F?</td><td class="rt-a">No</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REMAINING RECORDS (compact) ── -->
+
+    <div id="rec-okonkwo" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top"><div><div class="rec-name">Okonkwo, James</div><div class="rec-sub">MRN 668431 · (856) 555-2219</div></div><span class="rec-status-tag tag-utc">Unable to Contact</span></div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">PVI — AFib Ablation</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 24, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Jefferson University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Levi (EP)</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--amber)">D+5</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="info-block ib-amber"><div class="ib-title">PVI patient D+5 — 3 automated attempts exhausted</div>Day 5 post-PVI falls within the atrio-esophageal fistula risk window. If manual contact fails, escalate — this patient should not go uncontacted beyond today.</div>
+        <div><div class="sec-title">Attempt Log</div>
+          <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Mar 25 · 9:00 AM</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">Standard voicemail. No callback.</div></div></div>
+          <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">2</span><span class="ch-ts">Mar 26 · 10:15 AM</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail + SMS</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">Second attempt. No response.</div></div></div>
+          <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">3</span><span class="ch-ts">Mar 27 · 11:30 AM</span></div><div class="ch-outcome"><span class="ch-tag ct-na">No Answer</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">UTC threshold reached. Nurse worklist created.</div></div></div>
+        </div>
+        <div><div class="sec-title">Nurse Action</div><div class="disp-area"><div class="disp-status-line dsl-amber">3/3 automated attempts exhausted</div><div class="disp-btns"><button class="disp-btn db-red" onclick="toast('Escalating to triage — PVI patient UTC D+5','🚨')">Escalate to Triage</button><button class="disp-btn" onclick="toast('Logging manual call','📞')">Log Manual Call</button></div><textarea class="disp-note" rows="2" placeholder="Note…"></textarea></div></div>
+      </div>
+    </div>
+
+    <div id="rec-patel" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top"><div><div class="rec-name">Patel, Anita</div><div class="rec-sub">MRN 321654 · (609) 555-3698</div></div><span class="rec-status-tag tag-utc">Unable to Contact</span></div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">TAVR (Transfemoral)</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 9, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Cooper University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Tarditi</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--amber)">D+22</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="info-block ib-green"><div class="ib-title">Touch 1 (D+2) — Complete · No concerns</div>Antiplatelet compliant, wound healing, no neuro symptoms at 48h.</div>
+        <div class="info-block ib-amber"><div class="ib-title">Touch 2 (D+20) — UTC · 3/3 attempts exhausted</div>Day 22 — still within Plavix 30-day window. Follow-up echo status unknown.</div>
+        <div><div class="sec-title">Touch 2 Attempt Log</div>
+          <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Mar 28 · 9:30 AM</span><span class="ch-wave">Touch 2</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">Day 20 check-in voicemail.</div></div></div>
+          <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">2</span><span class="ch-ts">Mar 29 · 10:00 AM</span><span class="ch-wave">Touch 2</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail + SMS</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">No response.</div></div></div>
+          <div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">3</span><span class="ch-ts">Today · 11:15 AM</span><span class="ch-wave">Touch 2</span></div><div class="ch-outcome"><span class="ch-tag ct-na">No Answer</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">UTC threshold reached.</div></div></div>
+        </div>
+        <div><div class="sec-title">Nurse Action</div><div class="disp-area"><div class="disp-btns"><button class="disp-btn" onclick="toast('Logging manual call','📞')">Log Manual Call</button><button class="disp-btn db-green" onclick="toast('Touch 2 closed — UTC documented','✓')">Close T2 — UTC</button></div><textarea class="disp-note" rows="2" placeholder="Note…"></textarea></div></div>
+      </div>
+    </div>
+
+    <div id="rec-nguyen" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top"><div><div class="rec-name">Nguyen, Thomas</div><div class="rec-sub">MRN 559021 · (856) 555-6611</div></div><span class="rec-status-tag tag-wknd">Weekend Discharge</span></div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">PCI — RCA Stent</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 28, 2026 (Fri)</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Cooper University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Kaddissi</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--red)">D+3</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="info-block ib-purple"><div class="ib-title">Friday discharge — first contact delayed to Monday (D+3)</div>Sorted to top of today's priority queue. D+3 falls within DAPT compliance and access site risk window. Ava call queued — first attempt pending.</div>
+        <div><div class="sec-title">Action</div><div class="disp-area"><div class="disp-btns"><button class="disp-btn db-red" onclick="toast('Escalating Nguyen to priority — initiating immediate Ava call','🚨')">Initiate Ava Call Now</button></div><textarea class="disp-note" rows="2" placeholder="Note…"></textarea></div></div>
+      </div>
+    </div>
+
+    <div id="rec-smith" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top"><div><div class="rec-name">Smith, Robert</div><div class="rec-sub">MRN 112834 · (856) 555-8811</div></div><span class="rec-status-tag tag-call">Calling Now</span></div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">Diagnostic Cath · Radial</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 28, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Cooper University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Tarditi</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--amber)">D+2</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="info-block ib-blue"><div class="ib-title">Ava outbound call in progress — Touch 1 · Radial access script</div>Session AVA-20260330-112834 · Started 10:32 AM · Results will appear here when call completes.</div>
+      </div>
+    </div>
+
+    <div id="rec-garcia" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top"><div><div class="rec-name">Garcia, Luis</div><div class="rec-sub">MRN 883412 · (856) 555-5512</div></div><span class="rec-status-tag tag-pend">Voicemail Left</span></div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">Peripheral Angiography</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 29, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Heart House OBL</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Tarditi</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--amber)">D+1</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div><div class="sec-title">Attempt Log</div><div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Today · 8:52 AM</span><span class="ch-wave">Touch 1</span></div><div class="ch-outcome"><span class="ch-tag ct-vm">Voicemail Left</span><span class="ch-caret">▶</span></div></div><div class="call-body"><div class="vm-text">Standard voicemail left. Attempt 2 scheduled 12:00 PM today.</div></div></div></div>
+      </div>
+    </div>
+
+    <div id="rec-johnson" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top"><div><div class="rec-name">Johnson, Patricia</div><div class="rec-sub">MRN 774203 · (856) 555-0044</div></div><span class="rec-status-tag tag-pend">Pending — Touch 2</span></div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">PPM — Dual Chamber</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 9, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Jefferson University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Costello (EP)</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--green)">D+21</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="info-block ib-green"><div class="ib-title">Touch 1 (D+2) — Complete · No concerns</div>Wound healing, arm restriction compliant, no shocks, remote monitor active.</div>
+        <div class="info-block ib-blue"><div class="ib-title">Touch 2 — Queued for today · 1:15 PM</div>Device check confirmation, wound status, remote monitoring verification.</div>
+      </div>
+    </div>
+
+    <div id="rec-thompson" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top"><div><div class="rec-name">Thompson, Helen</div><div class="rec-sub">MRN 445671 · (856) 555-2233</div></div><span class="rec-status-tag tag-ok">Complete — No Concerns</span></div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">PCI — DES to OM1</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 10, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Cooper University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Kaddissi</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--green)">D+20</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="info-block ib-green"><div class="ib-title">Touch 2 complete · Outreach sequence closed</div>DAPT compliant — aspirin + Plavix, no missed doses. No chest pain. Energy improved. Stress echo reminder delivered. Follow-up April 20.</div>
+        <div><div class="sec-title">Call Log</div><div class="call-entry"><div class="call-hdr" onclick="toggle(this)"><div class="ch-left"><span class="ch-num">1</span><span class="ch-ts">Today · 9:22 AM</span><span class="ch-wave">Touch 2</span></div><div class="ch-outcome"><span class="ch-tag ct-ok">No Concerns</span><span class="ch-caret open">▶</span></div></div><div class="call-body open"><table class="resp-table"><tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">DAPT both medications?</td><td class="rt-a">Yes — aspirin + Plavix, compliant, no missed doses</td></tr><tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Chest pain at rest or nocturnal?</td><td class="rt-a">No</td></tr><tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">Shortness of breath?</td><td class="rt-a">No — energy better than pre-procedure</td></tr><tr class="rt-ok"><td class="rt-icon">✓</td><td class="rt-q">New OTC medications?</td><td class="rt-a">No</td></tr></table></div></div></div>
+      </div>
+    </div>
+
+    <div id="rec-diaz" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="rec-hdr">
+        <div class="rec-hdr-top"><div><div class="rec-name">Diaz, Maria</div><div class="rec-sub">MRN 661095 · (856) 555-7744</div></div><span class="rec-status-tag tag-inb">Inbound Resolved</span></div>
+        <div class="rec-meta">
+          <div class="rec-meta-cell"><div class="rmc-label">Procedure</div><div class="rmc-value">Diagnostic Cath · Femoral</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Date</div><div class="rmc-value">March 29, 2026</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Facility</div><div class="rmc-value">Cooper University</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Attending</div><div class="rmc-value">Dr. Tarditi</div></div>
+          <div class="rec-meta-cell"><div class="rmc-label">Day</div><div class="rmc-day" style="color:var(--green)">D+1</div></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="info-block ib-purple"><div class="ib-title">Patient called inbound before Touch 1 was placed · Resolved via TCC</div>Called main triage line 9:05 AM. POST-PROC badge surfaced context to Nurse Price. Groin bruising concern — reassured (normal post-closure). Touch 1 marked complete via inbound contact. Touch 2 queued April 18.</div>
+      </div>
+    </div>
+
+  </div><!-- /record-panel -->
+</div><!-- /main -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <span class="modal-title">Add Nurse Note</span>
+      <button class="modal-x" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="mf"><label>Note</label><textarea placeholder="Enter clinical note…" rows="4"></textarea></div>
+      <div class="mf"><label>Author</label>
+        <select>
+          <option>April Andrews, RN</option><option>Carly Price, RN</option>
+          <option>Dominique Gaumer, RN</option><option>Emily Payne, RN</option>
+          <option>Erin Forster, RN</option><option>Mary Jo Cimino, RN</option>
+          <option>Melissa Parkin, RN</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-feet">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="closeModal();toast('Note saved','✓')">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="ti"></span><span id="tm"></span></div>
+
+<script>
+// Clock
+setInterval(() => {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}, 1000);
+document.getElementById('clock').textContent =
+  new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+// Show record
+function show(id) {
+  document.querySelectorAll('.qi').forEach(e => e.classList.remove('sel'));
+  const qi = document.getElementById('qi-'+id);
+  if (qi) qi.classList.add('sel');
+  document.getElementById('emptyState').style.display = 'none';
+  document.querySelectorAll('[id^="rec-"]').forEach(e => e.style.display = 'none');
+  const rec = document.getElementById('rec-'+id);
+  if (rec) rec.style.display = 'flex';
+}
+show('ramirez');
+
+// Toggle call body
+function toggle(hdr) {
+  const body = hdr.nextElementSibling;
+  const caret = hdr.querySelector('.ch-caret');
+  body.classList.toggle('open');
+  if (caret) caret.classList.toggle('open');
+}
+
+// Filter queue
+function filter(f, btn) {
+  document.querySelectorAll('.qf').forEach(b => { b.classList.remove('on','on-red'); });
+  btn.classList.add('on');
+  document.querySelectorAll('.qi').forEach(qi => {
+    const isEsc = qi.classList.contains('s-esc');
+    const isUtc = qi.classList.contains('s-utc');
+    const isOk  = qi.classList.contains('s-ok');
+    const isWk  = qi.classList.contains('s-wknd');
+    if (f === 'all') qi.style.display = '';
+    else if (f === 'action') qi.style.display = (isEsc||isUtc||isWk) ? '' : 'none';
+    else if (f === 'done')   qi.style.display = isOk ? '' : 'none';
+  });
+}
+
+// Modal
+function openModal() { document.getElementById('overlay').classList.add('open'); }
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('overlay'))
+    document.getElementById('overlay').classList.remove('open');
+}
+
+// Toast
+let tt;
+function toast(msg, icon) {
+  const t = document.getElementById('toast');
+  document.getElementById('ti').textContent = icon||'';
+  document.getElementById('tm').textContent = ' '+msg;
+  t.classList.add('on');
+  clearTimeout(tt);
+  tt = setTimeout(() => t.classList.remove('on'), 3000);
+}
+</script>
+</body>
+</html>
