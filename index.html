@@ -650,7 +650,7 @@ body {
           <div class="esc-quote">"It was upsetting my stomach so I stopped it."</div>
         </div>
         <div class="esc-actions">
-          <button class="esc-btn esc-primary" onclick="window.open('https://nextgencommand.netlify.app','_blank')">Open in TCC</button>
+          <button class="esc-btn esc-primary" onclick="openInTCC('ramirez','DAPT_NON_COMPLIANCE','443821','Ramirez, Carlos')">Open in TCC</button>
           <button class="esc-btn esc-secondary" onclick="toast('Calling (856) 555-4481 on direct DID','📞')">Call Patient</button>
         </div>
       </div>
@@ -729,7 +729,7 @@ body {
           <div class="esc-quote">"My device gave me a shock when I was just sitting in my chair."</div>
         </div>
         <div class="esc-actions">
-          <button class="esc-btn esc-primary" onclick="window.open('https://nextgencommand.netlify.app','_blank')">Open in TCC</button>
+          <button class="esc-btn esc-primary" onclick="openInTCC('chen','DEVICE_SHOCK','227614','Chen, Margaret')">Open in TCC</button>
           <button class="esc-btn esc-secondary" onclick="toast('Calling (856) 555-7720','📞')">Call Patient</button>
         </div>
       </div>
@@ -1066,6 +1066,47 @@ body {
 <div class="toast" id="toast"><span id="ti"></span><span id="tm"></span></div>
 
 <script>
+// ── OutreachDataBus ──────────────────────────────────────────────
+// Connects to the shared heart_house_triage_bus (BroadcastChannel + localStorage)
+// Role: 'outreach' — publishes escalation and resolution events to TCC
+(function(global) {
+  'use strict';
+  const CHANNEL = 'heart_house_triage_bus';
+  const PREFIX  = 'triage_';
+  let _ch = null, _handlers = {};
+
+  function init() {
+    if (typeof BroadcastChannel !== 'undefined') {
+      try { _ch = new BroadcastChannel(CHANNEL); _ch.onmessage = _onMsg; } catch(e) {}
+    }
+    window.addEventListener('storage', _onStorage);
+    console.log('[OutreachDataBus] Proactive Outreach connected to bus');
+  }
+
+  function publish(type, payload) {
+    const env = { type, payload, source: 'outreach', timestamp: new Date().toISOString(), id: Math.random().toString(36).substr(2,9) };
+    if (_ch) { try { _ch.postMessage(env); } catch(e) {} }
+    try { localStorage.setItem(PREFIX + 'last_event', JSON.stringify(env)); } catch(e) {}
+    _dispatch(env);
+  }
+
+  function subscribe(type, fn) {
+    if (!_handlers[type]) _handlers[type] = [];
+    _handlers[type].push(fn);
+  }
+
+  function _onMsg(e) { const env = e.data; if (env && env.source !== 'outreach') _dispatch(env); }
+  function _onStorage(e) {
+    if (e.key !== PREFIX + 'last_event' || !e.newValue) return;
+    try { const env = JSON.parse(e.newValue); if (env.source !== 'outreach') _dispatch(env); } catch(e) {}
+  }
+  function _dispatch(env) {
+    ((_handlers[env.type] || []).concat(_handlers['*'] || [])).forEach(fn => { try { fn(env.payload, env); } catch(e) {} });
+  }
+
+  global.OutreachDataBus = { init, publish, subscribe };
+})(window);
+
 // Clock
 setInterval(() => {
   document.getElementById('clock').textContent =
@@ -1116,6 +1157,18 @@ function closeModal(e) {
     document.getElementById('overlay').classList.remove('open');
 }
 
+// Init bus
+OutreachDataBus.init();
+
+// Open TCC — publish escalation event then open in new tab
+function openInTCC(patientId, flag, mrn, name) {
+  OutreachDataBus.publish('outreach:escalation', {
+    patientId, patientMRN: mrn, patientName: name,
+    flag, source: 'proactive_outreach', timestamp: new Date().toISOString()
+  });
+  window.open('https://nextgencommand.netlify.app', '_blank');
+}
+
 // Live queue stats
 function updateStats() {
   const esc = document.querySelectorAll('.qi.s-esc').length;
@@ -1151,6 +1204,7 @@ function markResolved(patientId) {
     const escBanner = rec.querySelector('.esc-banner');
     if (escBanner) escBanner.style.display = 'none';
   }
+  OutreachDataBus.publish('outreach:resolved', { patientId, timestamp: new Date().toISOString() });
   updateStats();
   toast('Resolved — record closed', '✓');
 }
